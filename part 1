@@ -1,0 +1,69 @@
+# https://github.com/mGalarnyk/Python_Tutorials/blob/master/Sklearn/PCA/PCA_to_Speed-up_Machine_Learning_Algorithms.ipynb
+
+from sklearn.datasets import fetch_mldata
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
+import pandas as pd
+
+mnist = fetch_mldata('MNIST original')
+
+# test_size: what proportion of original data is used for test set
+train_img, test_img, train_lbl, test_lbl = train_test_split(
+    mnist.data, mnist.target, test_size=1/7.0, random_state=0)
+    
+# standardize the data
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+
+# Fit on training set only.
+scaler.fit(train_img)
+
+# Apply transform to both the training set and the test set.
+train_img = scaler.transform(train_img)
+test_img = scaler.transform(test_img)
+
+# PCA to speed up machine learning algorithms (logistic regression)
+from sklearn.decomposition import PCA
+
+# Make an instance of the model (to keep 95% of the explained variance keep as many variables as necessary)
+pca = PCA(.95)
+
+# Fit the model to the training dataset
+pca.fit(train_img)
+
+# Show how many components are necessary
+pca.n_components_
+
+# Apply the re-mapping of the datasets to the newly formed principal component axis
+train_img = pca.transform(train_img)
+test_img = pca.transform(test_img)
+
+# Import Logistic Regression
+from sklearn.linear_model import LogisticRegression
+
+# Make an instance of the new Logistic Model
+from sklearn.linear_model import LogisticRegression
+
+# Fit the model to the training data
+logisticRegr.fit(train_img, train_lbl)
+
+# Use the model to predict the test data
+# Predict for Multiple Observations (images) at Once
+logisticRegr.predict(test_img[0:10])
+
+# Measuring model performance
+score = logisticRegr.score(test_img, test_lbl)
+print(score)
+
+# Number of Components, Variance Explained, and Time for the Model to run
+pd.DataFrame(data = [[1.00, 784, 48.94, .9158],
+                     [.99, 541, 34.69, .9169],
+                     [.95, 330, 13.89, .92],
+                     [.90, 236, 10.56, .9168],
+                     [.85, 184, 8.85, .9156]], 
+             columns = ['Variance Retained',
+                      'Number of Components', 
+                      'Time (seconds)',
+                      'Accuracy'])
